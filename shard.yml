@@ -1,0 +1,23 @@
+name: MM2 PSDL room flag switcher
+version: 0.1.0
+
+targets:
+  mm2-psdl-rfs:
+    main: src/main.cr
+
+# authors:
+#   - name <email@example.com>
+
+# description: |
+#   Short description of MM2-PSDL-FS
+
+# dependencies:
+#   pg:
+#     github: will/crystal-pg
+#     version: "~> 0.5"
+
+# development_dependencies:
+#   webmock:
+#     github: manastech/webmock.cr
+
+# license: MIT
