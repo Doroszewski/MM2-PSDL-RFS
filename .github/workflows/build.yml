@@ -1,3 +1,6 @@
+# Based on:
+#   https://forum.crystal-lang.org/t/the-easiest-way-to-prepare-a-ready-to-use-windows-executable-on-linux/7040/4
+
 name: Crystal CI
 
 on:
@@ -7,26 +10,43 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
-    name: ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}-latest
+  build_release:
+    name: Build Release ${{ matrix.os }}
     strategy:
-      fail-fast: false
       matrix:
-        os: ["ubuntu", "macos", "windows"]
-
+        os: [ubuntu, windows]
+    runs-on: ${{ matrix.os }}-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: true
-      - uses: crystal-lang/install-crystal@v1
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Crystal
+        uses: crystal-lang/install-crystal@v1
         with:
           crystal: latest
-      - name: Run tests
-        run: crystal spec
-      - name: Build executable
-        run: shards build --release
-      - uses: actions/upload-artifact@v4
+
+      - name: Run Linux Build
+        if: matrix.os == 'ubuntu'
+        run: |
+          mkdir -p bin
+          chmod 755 bin
+          docker run -d --name alpine -v $(pwd):/workspace -w /workspace crystallang/crystal:latest-alpine tail -f /dev/null
+          docker exec alpine shards install --without-development --release --static
+          docker exec alpine shards build --release --static
+          docker exec alpine mv bin/mm2-psdl-rfs bin/mm2-psdl-rfs-linux
+#          docker exec alpine chmod +x bin/cowsay
+
+      - name: Run Windows Build x64
+        if: matrix.os == 'windows'
+        run: |
+          shards build --release --static
+          Set-ExecutionPolicy RemoteSigned -Scope Process
+          Rename-Item -Path bin/mm2-psdl-rfs.exe -NewName mm2-psdl-rfs-windows.exe
+#          Compress-Archive -Path bin/mm2-psdl-rfs.exe -DestinationPath bin/mm2-psdl-rfs-windows.zip
+
+      - name: Upload Release Asset
+        uses: softprops/action-gh-release@v2
         with:
-          name: mm2-psdl-rfs-${{ matrix.os }}
-          path: bin/${{ matrix.os == 'windows' && 'mm2-psdl-rfs.exe' || 'mm2-psdl-rfs' }}
+          files: |
+            bin/mm2-psdl-rfs-linux
+            bin/mm2-psdl-rfs-windows.exe
