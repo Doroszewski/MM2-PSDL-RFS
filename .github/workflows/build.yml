@@ -15,9 +15,6 @@ jobs:
       matrix:
         os: ["ubuntu", "macos", "windows"]
 
-    container:
-      image: crystallang/crystal
-
     steps:
       - uses: actions/checkout@v4
       - name: Install dependencies
