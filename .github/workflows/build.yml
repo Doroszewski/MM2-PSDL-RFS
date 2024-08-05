@@ -17,8 +17,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Install dependencies
-        run: shards install
+        with:
+          submodules: true
+      - uses: crystal-lang/install-crystal@v1
+        with:
+          crystal: latest
       - name: Run tests
         run: crystal spec
       - name: Build executable
