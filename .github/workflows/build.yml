@@ -50,3 +50,4 @@ jobs:
           files: |
             bin/mm2-psdl-rfs-linux
             bin/mm2-psdl-rfs-windows.exe
+          tag_name: rolling
