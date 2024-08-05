@@ -34,7 +34,6 @@ jobs:
           docker exec alpine shards install --without-development --release --static
           docker exec alpine shards build --release --static
           docker exec alpine mv bin/mm2-psdl-rfs bin/mm2-psdl-rfs-linux
-#          docker exec alpine chmod +x bin/cowsay
 
       - name: Run Windows Build x64
         if: matrix.os == 'windows'
