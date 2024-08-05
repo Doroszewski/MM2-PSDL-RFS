@@ -1,0 +1,32 @@
+name: Crystal CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["ubuntu", "macos", "windows"]
+
+    container:
+      image: crystallang/crystal
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: shards install
+      - name: Run tests
+        run: crystal spec
+      - name: Build executable
+        run: shards build --release
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mm2-psdl-rfs-${{ matrix.os }}
+          path: bin/${{ matrix.os == 'windows' && 'cowsay.exe' || 'cowsay' }}
