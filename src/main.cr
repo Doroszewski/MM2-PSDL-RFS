@@ -92,7 +92,7 @@ else
   option_rooms.each do |x|
     changes.each do | y |
       if y < 0
-        STDERR.puts "Unsetting hasn't been implemented yet!"
+        flags[x] = (flags[x] & (~(-y)))
       else
         flags[x] = (flags[x] | y)
       end
